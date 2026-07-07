@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Landing Page</title>
+  <style>
+    :root{
+      --bg: #0b1220;
+      --surface: rgba(255,255,255,0.06);
+      --surface-2: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.70);
+      --brand: #7c5cff;
+      --brand-2: #2fe8d8;
+      --border: rgba(255,255,255,0.14);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --nav-height: 70px;
+      --radius: 16px;
+      --trans: 0.35s;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 700px at 10% 0%, rgba(124,92,255,0.22), transparent 55%),
+        radial-gradient(900px 600px at 85% 10%, rgba(47,232,216,0.18), transparent 50%),
+        linear-gradient(180deg, #070b14 0%, var(--bg) 40%, #070b14 100%);
+      color: var(--text);
+      line-height:1.5;
+      overflow-x:hidden;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .container{ width:min(1100px, 92vw); margin-inline:auto; }
+
+    /* ========= NAV ========= */
+    .nav{
+      position: fixed;
+      inset-inline: 0;
+      top: 0;
+      height: var(--nav-height);
+      display:flex;
+      align-items:center;
+      z-index: 1000;
+      transition: background var(--trans), box-shadow var(--trans), border-color var(--trans), backdrop-filter var(--trans);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      backdrop-filter: blur(0px);
+    }
+
+    .nav.scrolled{
+      background: rgba(10, 16, 32, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner{
+      width:min(1100px, 92vw);
+      margin-inline:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-mark{
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.20) inset;
+      position: relative;
+      overflow:hidden;
+    }
+
+    .brand-mark::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.55), transparent 50%);
+      transform: rotate(18deg);
+    }
+
+    .brand span{
+      font-size: 16px;
+    }
+
+    .nav-links{
+      display:flex;
+      gap: 18px;
+      align-items:center;
+    }
+
+    .nav-links a{
+      position: relative;
+      padding: 10px 6px;
+      color: var(--muted);
+      transition: color var(--trans);
+      font-weight: 600;
+      font-size: 14px;
+      outline: none;
+    }
+
+    /* Underline animation on hover */
+    .nav-links a::after{
+      content:"";
+      position:absolute;
+      left: 0;
+      right: 0;
+      bottom: 6px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--trans);
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover{
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after{
+      transform: scaleX(1);
+    }
+
+    .cta{
+      margin-left: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--text);
+      transition: transform var(--trans), background var(--trans), border-color var(--trans);
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .cta:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    /* Hamburger */
+    .hamburger{
+      display:none;
+      width: 44px;
+      height: 44px;
+      align-items:center;
+      justify-content:center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      transition: transform var(--trans), background var(--trans);
+      cursor:pointer;
+    }
+
+    .hamburger:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+
+    .hamburger .bar{
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      position: relative;
+      border-radius: 999px;
+    }
+    .hamburger .bar::before,
+    .hamburger .bar::after{
+      content:"";
+      position:absolute;
+      left:0;
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 999px;
+      transition: transform var(--trans), top var(--trans), opacity var(--trans);
+    }
+    .hamburger .bar::before{ top: -6px; }
+    .hamburger .bar::after{ top: 6px; }
+
+    .nav.scrolled .hamburger{ background: rgba(255,255,255,0.10); }
+
+    /* Mobile menu panel */
+    .mobile-panel{
+      display:none;
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      right: 0;
+      z-index: 999;
+      padding: 14px 4vw;
+      background: rgba(10, 16, 32, 0.86);
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      transform: translateY(-8px);
+      opacity: 0;
+      transition: opacity var(--trans), transform var(--trans);
+    }
+
+    .mobile-panel.open{
+      display:block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mobile-links{
+      width:min(1100px, 92vw);
+      margin-inline:auto;
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+
+    .mobile-links a{
+      padding: 12px 12px;
+      border-radius: 12px;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      transition: color var(--trans), border-color var(--trans), background var(--trans);
+      font-weight: 700;
+    }
+    .mobile-links a:hover{
+      color: var(--text);
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.10);
+    }
+
+    /* ========= SECTIONS ========= */
+    section{ padding: 80px 0; }
+    .hero{ padding-top: calc(var(--nav-height) + 46px); }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 0 0 3px rgba(124,92,255,0.20);
+    }
+
+    h1{
+      font-size: clamp(34px, 5vw, 54px);
+      line-height:1.05;
+      margin: 0 0 14px;
+      letter-spacing: -0.6px;
+    }
+
+    .lead{ color: var(--muted); font-size: 16px; margin: 0 0 22px; }
+
+    .hero-actions{ display:flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-weight: 800;
+      transition: transform var(--trans), background var(--trans), border-color var(--trans);
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.22); }
+
+    .btn.primary{
+      border-color: rgba(124,92,255,0.40);
+      background: linear-gradient(135deg, rgba(124,92,255,0.45), rgba(47,232,216,0.20));
+    }
+
+    .hero-card{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+      overflow:hidden;
+      position: relative;
+    }
+
+    .hero-card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(500px 250px at 20% 0%, rgba(124,92,255,0.35), transparent 55%),
+        radial-gradient(500px 250px at 80% 10%, rgba(47,232,216,0.25), transparent 55%);
+      opacity: 0.8;
+    }
+
+    .hero-card-inner{
+      position: relative;
+      padding: 18px;
+    }
+
+    .mini-stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .stat{
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+    }
+
+    .stat .num{ font-weight: 900; font-size: 18px; }
+    .stat .lbl{ color: var(--muted); font-weight: 700; font-size: 13px; }
+
+    .progress{
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+    }
+    .progress .row{ display:flex; justify-content:space-between; gap:12px; margin-bottom:10px; }
+    .progress .row span{ color: var(--muted); font-weight: 700; font-size: 13px; }
+    .bar-wrap{ background: rgba(255,255,255,0.08); height: 10px; border-radius: 999px; overflow:hidden; border: 1px solid rgba(255,255,255,0.10); }
+    .bar-fill{ height: 100%; width: 72%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); border-radius: 999px; }
+
+    .section-title{
+      font-size: 28px;
+      margin: 0 0 10px;
+      letter-spacing: -0.3px;
+    }
+    .section-sub{ color: var(--muted); margin: 0 0 28px; }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+      transition: transform var(--trans), background var(--trans), border-color var(--trans);
+    }
+    .card:hover{
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .icon{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      margin-bottom: 12px;
+      position: relative;
+      overflow:hidden;
+    }
+    .icon::after{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background: radial-gradient(circle at 30% 20%, rgba(124,92,255,0.45), transparent 45%);
+      transform: rotate(14deg);
+    }
+    .icon svg{ position: relative; }
+
+    .card h3{ margin: 0 0 8px; font-size: 16px; }
+    .card p{ margin: 0; color: var(--muted); }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+
+    .about-panel{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .li{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 14px;
+    }
+
+    .check{
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      background: rgba(47,232,216,0.16);
+      border: 1px solid rgba(47,232,216,0.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-top: 1px;
+      flex: 0 0 auto;
+    }
+
+    .pricing-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .price-card{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+      transition: transform var(--trans), background var(--trans), border-color var(--trans);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .price-card.featured{
+      border-color: rgba(124,92,255,0.40);
+      background: linear-gradient(180deg, rgba(124,92,255,0.20), rgba(255,255,255,0.06));
+      transform: translateY(-4px);
+    }
+
+    .price-card:hover{
+      transform: translateY(-6px);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(124,92,255,0.18);
+      border: 1px solid rgba(124,92,255,0.35);
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .price{
+      font-size: 40px;
+      font-weight: 1000;
+      margin: 14px 0 8px;
+      letter-spacing: -1px;
+    }
+
+    .per{ color: var(--muted); font-weight: 750; }
+
+    .price-list{
+      margin: 14px 0 18px;
+      padding: 0;
+      list-style: none;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 14px;
+    }
+
+    .price-list li{ display:flex; gap: 10px; align-items:flex-start; }
+
+    footer{
+      padding: 36px 0 60px;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .footer-grid{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links{
+      display:flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    .footer-links a{
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      transition: background var(--trans), border-color var(--trans), color var(--trans);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .footer-links a:hover{
+      color: var(--text);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.20);
+    }
+
+    /* ========= RESPONSIVE ========= */
+    @media (max-width: 920px){
+      .hero-grid{ grid-template-columns: 1fr; }
+      .cards{ grid-template-columns: 1fr; }
+      .pricing-grid{ grid-template-columns: 1fr; }
+      .about-grid{ grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px){
+      .nav-links{ display:none; }
+      .cta{ display:none; }
+      .hamburger{ display:flex; }
+
+      .mobile-panel{ padding-left: 4vw; padding-right: 4vw; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* Make anchor scroll feel good */
+    html{ scroll-behavior: smooth; }
+
+  </style>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#home" aria-label="Brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <span>NovaLanding</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+        <a class="cta" href="#pricing">Get Started</a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span class="bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-panel" id="mobilePanel" aria-label="Mobile menu">
+    <div class="mobile-links">
+      <a href="#features" class="mobile-link">Features</a>
+      <a href="#about" class="mobile-link">About</a>
+      <a href="#pricing" class="mobile-link">Pricing</a>
+      <a href="#faq" class="mobile-link">FAQ</a>
+      <a href="#contact" class="mobile-link">Contact</a>
+      <a href="#pricing" class="mobile-link">Get Started</a>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot" aria-hidden="true"></span> Responsive • Fixed Nav • Smooth UX</div>
+          <h1>Build a landing page that feels fast, modern, and effortless.</h1>
+          <p class="lead">A fully responsive layout with a fixed navigation bar that changes style on scroll and a mobile hamburger menu with smooth transitions.</p>
+
+          <div class="hero-actions">
+            <a class="btn primary" href="#pricing">Start Free</a>
+            <a class="btn" href="#features">Explore Features</a>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Highlights">
+          <div class="hero-card-inner">
+            <div class="tag">Live Preview Ready</div>
+            <div class="mini-stats" role="list">
+              <div class="stat" role="listitem"><div class="num">0.35s</div><div class="lbl">UI transitions</div></div>
+              <div class="stat" role="listitem"><div class="num">Fixed</div><div class="lbl">Nav bar</div></div>
+              <div class="stat" role="listitem"><div class="num">5+</div><div class="lbl">Menu links</div></div>
+              <div class="stat" role="listitem"><div class="num">Mobile</div><div class="lbl">Hamburger</div></div>
+            </div>
+
+            <div class="progress" aria-label="Performance meter">
+              <div class="row"><span>Performance</span><span>72% improved</span></div>
+              <div class="bar-wrap"><div class="bar-fill"></div></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <h2 class="section-title">Features</h2>
+        <p class="section-sub">Thoughtful interactions, clean styling, and mobile-first responsiveness.</p>
+
+        <div class="cards">
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Scroll-aware navigation</h3>
+            <p>Uses <code>addEventListener('scroll', ...)</code> to toggle a <code>.scrolled</code> class for a blurred solid header.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 21h8" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M9 9h6" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Smooth hover states</h3>
+            <p>Menu item hover uses CSS <code>:hover</code> with animated underline and color transitions.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 7h10v10H7V7Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+                <path d="M4 4h4v4H4V4Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+                <path d="M16 4h4v4h-4V4Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+                <path d="M4 16h4v4H4v-4Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+                <path d="M16 16h4v4h-4v-4Z" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>Responsive sections</h3>
+            <p>Flexbox/grid layout plus media queries for desktop, tablet, and mobile.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">About</h2>
+        <p class="section-sub">A clean structure that keeps content readable and interactive elements consistent.</p>
+
+        <div class="about-grid">
+          <div class="about-panel">
+            <h3 style="margin:0 0 8px;">Designed for clarity</h3>
+            <p style="margin:0; color: var(--muted); font-weight: 650;">
+              Theme colors are controlled via CSS variables. Transitions are tuned to 0.35s for a responsive feel.
+            </p>
+
+            <div class="list" role="list">
+              <div class="li" role="listitem"><div class="check" aria-hidden="true">✓</div> High contrast typography</div>
+              <div class="li" role="listitem"><div class="check" aria-hidden="true">✓</div> Consistent spacing & radius</div>
+              <div class="li" role="listitem"><div class="check" aria-hidden="true">✓</div> Smooth scroll behavior</div>
+            </div>
+          </div>
+
+          <div class="about-panel">
+            <h3 style="margin:0 0 8px;">Keyboard & UX friendly</h3>
+            <p style="margin:0; color: var(--muted); font-weight: 650;">
+              The hamburger menu toggles a dedicated mobile panel. Clicking a link closes it to reduce extra steps.
+            </p>
+
+            <div class="progress" style="margin-top:14px;">
+              <div class="row"><span>Engagement</span><span>+18%</span></div>
+              <div class="bar-wrap"><div class="bar-fill" style="width: 58%;"></div></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <h2 class="section-title">Pricing</h2>
+        <p class="section-sub">Choose a plan that matches your momentum.</p>
+
+        <div class="pricing-grid">
+          <article class="price-card">
+            <h3 style="margin:0; font-size:16px; color: var(--muted);">Starter</h3>
+            <div class="price"><span style="font-size:16px; color: var(--muted); font-weight:800;">$</span>19</div>
+            <div class="per">per month</div>
+
+            <ul class="price-list">
+              <li><span aria-hidden="true">✓</span> Basic components</li>
+              <li><span aria-hidden="true">✓</span> Email support</li>
+              <li><span aria-hidden="true">✓</span> Responsive layout</li>
+            </ul>
+
+            <a class="btn" href="#contact" style="width:100%;">Choose Starter</a>
+          </article>
+
+          <article class="price-card featured">
+            <div class="tag">Most Popular</div>
+            <h3 style="margin:10px 0 0; font-size:16px; color: rgba(255,255,255,0.90);">Pro</h3>
+            <div class="price"><span style="font-size:16px; color: var(--muted); font-weight:800;">$</span>39</div>
+            <div class="per">per month</div>
+
+            <ul class="price-list">
+              <li><span aria-hidden="true">✓</span> Advanced sections</li>
+              <li><span aria-hidden="true">✓</span> Priority support</li>
+              <li><span aria-hidden="true">✓</span> Smart UI interactions</li>
+            </ul>
+
+            <a class="btn primary" href="#contact" style="width:100%;">Choose Pro</a>
+          </article>
+
+          <article class="price-card">
+            <h3 style="margin:0; font-size:16px; color: var(--muted);">Team</h3>
+            <div class="price"><span style="font-size:16px; color: var(--muted); font-weight:800;">$</span>79</div>
+            <div class="per">per month</div>
+
+            <ul class="price-list">
+              <li><span aria-hidden="true">✓</span> Collaboration-ready</li>
+              <li><span aria-hidden="true">✓</span> Design system tokens</li>
+              <li><span aria-hidden="true">✓</span> Dedicated onboarding</li>
+            </ul>
+
+            <a class="btn" href="#contact" style="width:100%;">Choose Team</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <h2 class="section-title">FAQ</h2>
+        <p class="section-sub">Quick answers about the interactive navigation and responsiveness.</p>
+
+        <div class="cards" style="grid-template-columns: repeat(2, 1fr);">
+          <article class="card">
+            <h3>How does the nav change on scroll?</h3>
+            <p>JavaScript listens for scroll events and adds/removes the <code>.scrolled</code> class when you pass 50px.</p>
+          </article>
+          <article class="card">
+            <h3>Does the mobile menu work?</h3>
+            <p>Yes. The hamburger button toggles an accessible mobile panel and closes it when you click a link.</p>
+          </article>
+          <article class="card">
+            <h3>Are hover effects smooth?</h3>
+            <p>Yes. Menu item underline and color changes use CSS transitions for smooth visual feedback.</p>
+          </article>
+          <article class="card">
+            <h3>Is it responsive?</h3>
+            <p>Uses media queries and grid/flex to adjust at tablet and mobile sizes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <p class="section-sub">This is a demo landing page—hook this section to your backend or form provider.</p>
+
+        <div class="about-grid">
+          <div class="about-panel">
+            <h3 style="margin:0 0 10px;">Send a message</h3>
+            <form onsubmit="event.preventDefault(); alert('Demo: form submitted!');" style="display:flex; flex-direction:column; gap:12px;">
+              <label style="display:flex; flex-direction:column; gap:6px; color: var(--muted); font-weight: 750; font-size: 14px;">
+                Name
+                <input required style="padding:12px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: var(--text); outline:none;" />
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px; color: var(--muted); font-weight: 750; font-size: 14px;">
+                Email
+                <input type="email" required style="padding:12px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: var(--text); outline:none;" />
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px; color: var(--muted); font-weight: 750; font-size: 14px;">
+                Message
+                <textarea required rows="4" style="padding:12px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: var(--text); outline:none; resize: vertical;"></textarea>
+              </label>
+              <button class="btn primary" type="submit">Submit</button>
+            </form>
+          </div>
+
+          <div class="about-panel">
+            <h3 style="margin:0 0 10px;">Navigation demo</h3>
+            <p style="margin:0; color: var(--muted); font-weight: 650;">
+              Scroll up and down to see the nav background switch at 50px. Hover the desktop menu items to see an animated underline.
+            </p>
+            <div class="list" style="margin-top:16px;">
+              <div class="li"><div class="check" aria-hidden="true">✓</div> Fixed header</div>
+              <div class="li"><div class="check" aria-hidden="true">✓</div> Hover underline animation</div>
+              <div class="li"><div class="check" aria-hidden="true">✓</div> Hamburger menu on mobile</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-grid">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <div class="brand-mark" aria-hidden="true" style="width:30px; height:30px; border-radius: 11px;"></div>
+            <div style="font-weight:900; color: rgba(255,255,255,0.85);">NovaLanding</div>
+          </div>
+          <div>© <span id="year"></span> NovaLanding. All rights reserved.</div>
+        </div>
+
+        <div class="footer-links" aria-label="Footer links">
+          <a href="#features">Features</a>
+          <a href="#about">About</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // ===== Scroll-aware header =====
+    const nav = document.getElementById('nav');
+
+    const onScroll = () => {
+      // Toggle the class once scroll passes 50px
+      if (window.scrollY > 50) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    };
+
+    // Must use addEventListener('scroll', ...)
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // initial state
+
+    // ===== Mobile hamburger toggle =====
+    const hamburger = document.getElementById('hamburger');
+    const mobilePanel = document.getElementById('mobilePanel');
+    const mobileLinks = mobilePanel.querySelectorAll('a');
+
+    const setOpen = (isOpen) => {
+      mobilePanel.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = !mobilePanel.classList.contains('open');
+      setOpen(isOpen);
+    });
+
+    // Close the menu when user clicks a link
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    // Close if you resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 760) setOpen(false);
+    });
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
+
