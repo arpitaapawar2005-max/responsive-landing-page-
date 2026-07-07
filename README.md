@@ -3,8 +3,7 @@
 A fully responsive landing page built with **HTML, CSS, and JavaScript**, featuring an interactive, fixed navigation bar.
 
 ## Live Demo
-> Add your GitHub Pages link here once deployed, e.g.
-> `https://<your-username>.github.io/responsive-landing-page/`
+🔗 https://arpitaapawar2005-max.github.io/responsive-landing-page-/
 
 ## Task Requirements Covered
 - **Fixed navigation bar** — stays pinned to the top and visible on the whole page using `position: fixed`.
